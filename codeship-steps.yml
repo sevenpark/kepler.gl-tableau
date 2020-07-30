@@ -3,14 +3,26 @@
   type: push
   tag: "master"
   image_name: 084888172679.dkr.ecr.us-east-1.amazonaws.com/kepler
-  image_tag: "{{ .Branch }}"
+  image_tag: "{{ .Branch }}-{{ .CommitID }}"
   registry: https://084888172679.dkr.ecr.us-east-1.amazonaws.com
   dockercfg_service: aws_dockercfg_prod
 
-- name: Deploy to ECS
-  type: serial
-  steps:
-    - service: aws_deployment_prod
-      tag: "master"
-      command: deploy/ops/aws_deployment.sh
-  dockercfg_service: aws_dockercfg_prod
+- name: Terraform init prod
+  tag: "master"
+  service: terraform
+  command: init --input=false ./
+
+- name: Terraform validate prod
+  tag: "master"
+  service: terraform
+  command: validate ./
+
+- name: Terraform plan prod
+  tag: "master"
+  service: terraform
+  command: plan --input=false --out=./codeship.tfplan
+
+- name: Terraform apply prod
+  tag: "master"
+  service: terraform
+  command: apply --input=false ./codeship.tfplan
