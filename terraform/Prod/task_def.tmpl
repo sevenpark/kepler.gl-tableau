@@ -1,0 +1,30 @@
+[
+  {
+    "name": "kepler_${kepler_env}",
+    "image": "084888172679.dkr.ecr.us-east-1.amazonaws.com/kepler:${kepler_branch}-${commit_id}",
+    "essential": true,
+    "portMappings": [
+      {
+        "hostPort": ${kepler_port},
+        "protocol": "tcp",
+        "containerPort": ${kepler_port}
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/apps/kepler-ecs-${kepler_env}",
+        "awslogs-region": "us-east-1",
+        "awslogs-stream-prefix": "kepler"
+      }
+    },
+    "memory": ${kepler_memory},
+    "cpu": ${kepler_cpu},
+    "environment": [
+      {
+        "name": "ENV",
+        "value": "${kepler_env}"
+      }
+    ]
+  }
+]

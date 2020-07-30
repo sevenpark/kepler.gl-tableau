@@ -13,12 +13,13 @@ aws_dockercfg_prod:
   encrypted_env_file: aws.env.encrypted
   cache: true
 
-aws_deployment_prod:
-  image: codeship/aws-deployment
-  add_docker: true
-  encrypted_env_file: aws.env.encrypted
-  environment:
-    - AWS_DEFAULT_REGION=us-east-1
+terraform:
+  build:
+    dockerfile: ./ops/Dockerfile
+    args:
+      TF_VAR_CI_COMMIT_ID: "{{ .CommitID }}"
+      BRANCH: "Prod"
   volumes:
-    - ./:/deploy
-  cache: true
+    - terraform/:/terraform
+  encrypted_env_file:
+    - aws.env.encrypted
